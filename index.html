@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="theme-color" content="#08111f">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220"><link rel="manifest" href="manifest.json">
+<title>FinWish</title>
+
+  <link rel="stylesheet" href="css/style.css">
+<meta name="finwish-v361" content="data-fix-v361">
+</head>
+<body>
+<section id="auth" class="auth">
+<div class="authbox">
+<div class="auth-hero"><div class="auth-logo-mark">✨</div><div><div class="logo">Fin<span>Wish</span></div><div class="muted" style="font-size:12px">Your money. Your dreams.</div></div></div>
+<div id="loginPane">
+<h2>Selamat datang 👋</h2><p class="muted">Masuk cepat dan lanjutkan mengatur uangmu.</p>
+<div class="social-login">
+<button type="button" id="googleLogin" class="oauth-btn"><span class="google-mark">G</span><b>Lanjut dengan Google</b></button>
+<button type="button" id="phoneLogin" class="oauth-btn phone-btn"><span>📱</span><b>Masuk dengan nomor HP</b></button>
+</div>
+<div class="auth-divider"><span>atau gunakan email</span></div>
+<form id="loginForm"><input id="loginEmail" type="email" placeholder="Email" autocomplete="email" required><input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" required><button class="btn" type="submit">Masuk dengan Email →</button></form>
+<div id="loginLoading" class="auth-loading"><span class="spinner"></span> Memeriksa akun...</div>
+<p class="auth-switch muted">Belum punya akun? <button class="auth-link" type="button" onclick="showAuth('register')">Daftar sekarang</button></p>
+</div>
+<div id="phonePane" class="hidden">
+<h2>📱 Masuk dengan HP</h2><p class="muted">Masukkan nomor HP dengan kode negara, contoh <b>+62812xxxx</b>.</p>
+<form id="phoneForm"><input id="phoneNumber" type="tel" inputmode="tel" placeholder="+62812xxxx" autocomplete="tel" required><button class="btn" type="submit">Kirim kode OTP</button></form>
+<div id="phoneOtpBox" class="hidden"><input id="phoneOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 digit kode OTP"><button id="verifyPhone" class="btn full" type="button">Verifikasi & Masuk</button></div>
+<button class="text-btn" type="button" onclick="showAuth('login')">← Kembali ke login</button>
+</div>
+<div id="registerPane" class="hidden"><h2>Buat akun ✨</h2><p class="muted">Simpan keuangan dan impianmu dengan aman.</p>
+<button type="button" id="googleRegister" class="oauth-btn"><span class="google-mark">G</span><b>Daftar dengan Google</b></button>
+<div class="auth-divider"><span>atau email</span></div>
+<form id="registerForm"><input id="regEmail" type="email" placeholder="Email" autocomplete="email" required><input id="regPass" type="password" minlength="6" placeholder="Password minimal 6 karakter" autocomplete="new-password" required><button class="btn" type="submit">Buat akun →</button></form>
+<div id="registerLoading" class="auth-loading"><span class="spinner"></span> Membuat akun...</div>
+<p class="auth-switch muted">Sudah punya akun? <button class="auth-link" type="button" onclick="showAuth('login')">Masuk</button></p></div>
+<p id="authMsg" class="auth-msg"></p>
+</div></section>
+
+<main id="app" class="wrap hidden">
+<header><div class="brand">Fin<span>Wish</span></div><div class="header-actions"><span id="status" class="status">Offline</span><button class="account-btn" id="accountBtn" aria-label="Akun">👤</button></div></header>
+<nav><button class="active" data-tab="home">🏠 Beranda</button><button data-tab="trans">💸 Keuangan</button><button data-tab="wish">✨ Wishlist</button><button data-tab="goal">🎯 Target</button></nav>
+
+<section id="home" class="view active"><div class="hero"><span class="muted">Saldo saat ini</span><div id="balance" class="balance">Rp0</div><div class="stats"><div class="stat"><span class="muted">Pemasukan</span><b id="income" class="income">Rp0</b></div><div class="stat"><span class="muted">Pengeluaran</span><b id="expense" class="expense">Rp0</b></div></div></div>
+<div class="grid"><div class="card"><h3>Transaksi terbaru</h3><div id="recent" class="list"></div></div><div class="card"><h3>Target terdekat</h3><div id="homeGoals"></div></div></div></section>
+
+<section id="trans" class="view"><div class="head"><h2>Keuangan</h2><button class="btn" onclick="openModal('transModal')">+ Transaksi</button></div><div class="card"><div id="transactions" class="list"></div></div></section>
+<section id="wish" class="view"><div class="head"><h2>Wishlist</h2><button class="btn" onclick="openModal('wishModal')">+ Wishlist</button></div><div id="wishGrid" class="wishgrid"></div></section>
+<section id="goal" class="view"><div class="head"><h2>Target Tabungan</h2><button class="btn" onclick="openModal('goalModal')">+ Target</button></div><div class="card"><div id="goals"></div></div></section>
+</main>
+
+<div id="accountModal" class="modal"><div class="modalbox account-modal">
+<div class="modalhead"><div><h3>👤 Akun FinWish</h3><small class="muted">Pengaturan akun dan sesi.</small></div><button class="close" onclick="closeModal('accountModal')">×</button></div>
+<div class="account-card"><div class="account-avatar">✨</div><div><b id="accountEmail">Pengguna FinWish</b><small id="accountProvider">Akun tersimpan di cloud</small></div></div>
+<button class="account-action" id="logout"><span>↪️</span><div><b>Keluar</b><small>Keluar dari akun FinWish</small></div><strong>›</strong></button>
+</div></div>
+<div id="transModal" class="modal"><div class="modalbox"><div class="modalhead"><h3>Tambah transaksi</h3><button class="close" onclick="closeModal('transModal')">×</button></div><form id="transForm"><select id="tType"><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select><input id="tAmount" type="number" min="0" placeholder="Nominal" required><input id="tNote" placeholder="Keterangan"><input id="tDate" type="hidden" required><button type="button" id="tDatePicker" class="date-picker-btn"><span>📅</span><div><b>Tanggal transaksi</b><small id="tDateText">Pilih tanggal</small></div><strong>›</strong></button><button class="btn">Simpan</button></form></div></div>
+<div id="wishMoneyModal" class="modal"><div class="modalbox small-modal">
+<div class="modalhead"><div><h3>💰 Tambah tabungan</h3><small class="muted">Tambahkan uang ke wishlist ini.</small></div><button type="button" class="close" onclick="closeModal('wishMoneyModal')">×</button></div>
+<div id="wishMoneyInfo" class="wish-money-info"></div>
+<form id="wishMoneyForm">
+<input id="wishMoneyAmount" type="number" min="1" placeholder="Contoh: 10000" required>
+<div class="quick-money">
+<button type="button" class="btn secondary small" data-wish-money="10000">+10rb</button>
+<button type="button" class="btn secondary small" data-wish-money="50000">+50rb</button>
+<button type="button" class="btn secondary small" data-wish-money="100000">+100rb</button>
+</div>
+<button class="btn full" type="submit">Tambah ke Wishlist ✨</button>
+</form></div></div>
+<div id="wishModal" class="modal"><div class="modalbox wish-modalbox">
+<div class="modalhead"><div><h3>✨ Tambah Wishlist</h3><small class="muted">Simpan barang atau impian yang ingin kamu wujudkan.</small></div><button type="button" class="close" onclick="closeModal('wishModal')">×</button></div>
+<form id="wishForm">
+<input id="wName" placeholder="Nama barang / impian" required>
+<textarea id="wMsg" placeholder="Pesan atau alasan (opsional)"></textarea>
+<div class="two-fields"><input id="wPrice" type="number" min="0" placeholder="Target harga" required><input id="wSaved" type="number" min="0" placeholder="Sudah terkumpul"></div>
+<div class="upload-box" id="wishUploadBox" role="button" tabindex="0">
+  <input id="wImage" type="file" accept="image/*">
+  <div id="wishUploadIcon">📷</div>
+  <b id="wishUploadTitle">Tambah gambar</b>
+  <small id="wishUploadHint">Ketuk di sini untuk memilih foto dari HP</small>
+  <img id="wishPreview" class="wish-preview hidden" alt="Preview wishlist">
+</div>
+<button class="btn full" type="submit">Simpan Wishlist ✨</button>
+</form></div></div>
+<div id="moneyModal" class="modal"><div class="modalbox small-modal">
+<div class="modalhead"><div><h3>💰 Tambah tabungan</h3><small class="muted">Masukkan nominal yang ingin ditambahkan.</small></div><button type="button" class="close" onclick="closeModal('moneyModal')">×</button></div>
+<form id="moneyForm"><input id="moneyAmount" type="number" min="1" placeholder="Contoh: 50000" required><div class="quick-money"><button type="button" class="btn secondary small" data-money="10000">+10rb</button><button type="button" class="btn secondary small" data-money="50000">+50rb</button><button type="button" class="btn secondary small" data-money="100000">+100rb</button></div><button class="btn full" type="submit">Tambah Tabungan</button></form></div></div>
+<div id="goalModal" class="modal"><div class="modalbox"><div class="modalhead"><h3>Tambah target</h3><button class="close" onclick="closeModal('goalModal')">×</button></div><form id="goalForm"><input id="gName" placeholder="Nama target" required><input id="gTarget" type="number" min="1" placeholder="Target nominal" required><input id="gSaved" type="number" min="0" value="0" placeholder="Sudah terkumpul"><input id="gDate" type="hidden"><button type="button" id="gDatePicker" class="date-picker-btn"><span>🎯</span><div><b>Tanggal target</b><small id="gDateText">Pilih tanggal</small></div><strong>›</strong></button><button class="btn">Simpan target</button></form></div></div>
+<div id="calendarModal" class="modal calendar-modal">
+  <div class="calendar-box">
+    <div class="calendar-top">
+      <div><small id="calYear">2026</small><h2 id="calTitle">Agustus</h2></div>
+      <button type="button" class="close" onclick="closeModal('calendarModal')">×</button>
+    </div>
+    <div class="calendar-nav">
+      <button type="button" id="calPrev">‹</button><b id="calMonthLabel">Agustus 2026</b><button type="button" id="calNext">›</button>
+    </div>
+    <div class="calendar-week"><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span></div>
+    <div id="calendarDays" class="calendar-days"></div>
+    <div class="calendar-actions">
+      <button type="button" class="btn secondary" id="calToday">Hari ini</button>
+      <button type="button" class="btn danger" id="calClear">Hapus tanggal</button>
+      <button type="button" class="btn" id="calDone">Selesai</button>
+    </div>
+  </div>
+</div>
+<div id="confirmDialog" class="confirm-overlay" aria-hidden="true">
+  <div class="confirm-card">
+    <div class="confirm-icon">🗑️</div>
+    <h3 id="confirmTitle">Hapus data?</h3>
+    <p id="confirmText">Data yang dihapus tidak bisa dikembalikan.</p>
+    <div class="confirm-actions">
+      <button type="button" class="btn secondary" id="confirmCancel">Batal</button>
+      <button type="button" class="btn danger" id="confirmOk">Hapus</button>
+    </div>
+  </div>
+</div>
+<div id="authSuccess" class="auth-success"><div class="success-card"><div class="success-icon">✓</div><h2>Berhasil masuk!</h2><p>Selamat datang kembali di FinWish.</p></div></div>
+<div id="toast" class="toast"></div>
+
+
+
+
+
+  <script src="js/ui.js"></script>
+  <script type="module" src="js/app.js"></script>
+<div id="bottomNavSpacer" aria-hidden="true"></div>
+</body></html>
